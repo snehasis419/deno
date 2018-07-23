@@ -55,3 +55,16 @@ def touch(fname):
         os.utime(fname, None)
     else:
         open(fname, 'a').close()
+
+
+# Recursive search for files of certain extensions.
+# (Recusrive glob doesn't exist in python 2.7.)
+def g(directory, *extensions):
+    matches = []
+    for root, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            for ext in extensions:
+                if filename.endswith(ext):
+                    matches.append(os.path.join(root, filename))
+                    break
+    return matches

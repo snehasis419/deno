@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-
 import os
-from glob import glob
-from util import run
+from util import run, g
 
 root_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 third_party_path = os.path.join(root_path, "third_party")
@@ -12,15 +10,18 @@ tools_path = os.path.join(root_path, "tools")
 rustfmt_config = os.path.join(tools_path, "rustfmt.toml")
 
 os.chdir(root_path)
-# TODO(ry) Install clang-format in third_party.
-run(["clang-format", "-i", "-style", "Google"] + glob("src/*.cc") +
-    glob("src/*.h"))
-for fn in ["BUILD.gn", ".gn"] + glob("build_extra/**/*.gn*"):
+
+# TODO(ry) Use third_party/depot_tools/clang-format.
+run(["clang-format", "-i", "-style", "Google"] + g("src", ".cc", ".h"))
+
+for fn in ["BUILD.gn", ".gn"] + g("build_extra", ".gn", ".gni"):
     run(["gn", "format", fn])
+
 # TODO(ry) Install yapf in third_party.
-run(["yapf", "-i"] + glob("tools/*.py") + glob("build_extra/**/*.py"))
-run(["node", prettier, "--write"] + glob("js/*.js") + glob("js/*.ts") +
-    ["tsconfig.json"] + ["tslint.json"])
+run(["yapf", "-i"] + g("tools/", ".py") + g("build_extra", ".py"))
+
+run(["node", prettier, "--write"] + g("js/", ".js", ".ts") +
+    ["tsconfig.json", "tslint.json"])
 
 # Set RUSTFMT_FLAGS for extra flags.
 rustfmt_extra_args = []
@@ -29,4 +30,4 @@ if 'RUSTFMT_FLAGS' in os.environ:
 run([
     "rustfmt", "--config-path", rustfmt_config, "--error-on-unformatted",
     "--write-mode", "overwrite"
-] + rustfmt_extra_args + glob("src/*.rs"))
+] + rustfmt_extra_args + g("src/", ".rs"))
