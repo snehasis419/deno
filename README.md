@@ -78,16 +78,12 @@ To build:
     cd deno
     ./tools/run_hooks.py
 
-    # Configure
-    ./third_party/depot_tools/gn gen out/default
-    ./third_party/depot_tools/gn gen out/release --args='cc_wrapper="ccache" is_official_build=true'
-    ./third_party/depot_tools/gn gen out/debug --args='cc_wrapper="ccache" is_debug=true '
-
     # Build
-    ./third_party/depot_tools/ninja -C out/default/ deno
+    ./tools/build.py
 
 Other useful commands:
 
+    ./tools/build.py --mode=debug :all
     ./third_party/depot_tools/gn args out/default/ --list
     ./third_party/depot_tools/gn args out/default/
     ./third_party/depot_tools/gn desc out/default/ :deno

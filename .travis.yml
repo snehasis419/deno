@@ -37,14 +37,8 @@ install:
  - export CCACHE_SLOPPINESS=time_macros
  # In case gn gen args change, delete args.gn to avoid using cached values.
  - rm -f $BUILD_PATH/args.gn
- # is_debug, use_allocator, and ccache are used to speed travis.
- # use_custom_libcxx=false and use_sysroot=false seem to be required to build on
- # Ubuntu 14.04
- - gn gen $BUILD_PATH --args='is_debug=false use_allocator="none" cc_wrapper="ccache" use_custom_libcxx=false use_sysroot=false'
- - gn args $BUILD_PATH --list
  - ccache -s
- # Travis hangs without -j2 argument to ninja.
- - ninja -j2 -C $BUILD_PATH :all
+ - ./tools/build.py --build_path=$BUILD_PATH --args='use_allocator="none" use_custom_libcxx=false use_sysroot=false'
 script:
  - ./tools/lint.py
  - ./tools/test.py $BUILD_PATH
